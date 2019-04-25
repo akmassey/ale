@@ -43,6 +43,7 @@ function! ale#lsp#Register(executable_or_address, project, init_options) abort
         \       'definition': 0,
         \       'typeDefinition': 0,
         \       'symbol_search': 0,
+        \       'code_actions': 0,
         \   },
         \}
     endif
@@ -222,6 +223,11 @@ function! s:UpdateCapabilities(conn, capabilities) abort
     if get(a:capabilities, 'workspaceSymbolProvider') is v:true
         let a:conn.capabilities.symbol_search = 1
     endif
+
+    if get(a:capabilities, 'codeActionProvider') is v:true
+    \|| type(get(a:capabilities, 'codeActionProvider')) is v:t_dict
+        let a:conn.capabilities.code_actions = 1
+    endif
 endfunction
 
 " Update a connection's configuration dictionary and notify LSP servers
@@ -317,6 +323,7 @@ function! ale#lsp#MarkConnectionAsTsserver(conn_id) abort
     let l:conn.capabilities.completion_trigger_characters = ['.']
     let l:conn.capabilities.definition = 1
     let l:conn.capabilities.symbol_search = 1
+    let l:conn.capabilities.code_actions = 1
 endfunction
 
 function! s:SendInitMessage(conn) abort
